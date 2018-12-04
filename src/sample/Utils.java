@@ -1,4 +1,9 @@
 package sample;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Random;
 
 public class Utils {
@@ -36,4 +41,64 @@ public class Utils {
     public static double[] softmax(double[] array) {
         return softmax(array, 8);
     }
+    
+    
+    public static double[][] load() {
+    	ObjectInputStream ois = null;
+
+        try {
+          final FileInputStream fichier = new FileInputStream("modules/sample/src/sample/Q_table.ser");
+          ois = new ObjectInputStream(fichier);
+          final Matrix m = (Matrix) ois.readObject();
+          return m.matrice;
+        } catch (final java.io.IOException e) {
+        	//file not found
+        	double[][] Q = new double[StateDummy.NUMBER][FireBrigadeDummy.ACTION_NUMBER];
+        	for (int state = 0; state < StateDummy.NUMBER; state++) {
+                for (int action = 0; action < FireBrigadeDummy.ACTION_NUMBER; action++) {
+                    Q[state][action] = 0;
+                }
+            }
+        	return Q;
+        } catch (final ClassNotFoundException e) {
+          e.printStackTrace();
+        } finally {
+          try {
+            if (ois != null) {
+              ois.close();
+            }
+          } catch (final IOException ex) {
+            ex.printStackTrace();
+          }
+        }
+		return null;
+    }
+    
+    
+    public static void save(int time, double[][] Q) {
+    	if (time %50 == 0) {
+    		System.out.println("save File");
+    		Matrix m = new Matrix(Q);
+    	    ObjectOutputStream oos = null;
+
+    	    try {
+    	      final FileOutputStream fichier = new FileOutputStream("modules/sample/src/sample/Q_table.ser");
+    	      oos = new ObjectOutputStream(fichier);
+    	      oos.writeObject(m);
+    	      oos.flush();
+    	    } catch (final java.io.IOException e) {
+    	      e.printStackTrace();
+    	    } finally {
+    	      try {
+    	        if (oos != null) {
+    	          oos.flush();
+    	          oos.close();
+    	        }
+    	      } catch (final IOException ex) {
+    	        ex.printStackTrace();
+    	      }
+    	    }
+    	}
+    }
 }
+

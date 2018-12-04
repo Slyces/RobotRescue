@@ -31,7 +31,7 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
 
     private double learningRate = 0.4;
     private double gamma = 0.9;
-    private int ACTION_NUMBER = 3;
+    public static int ACTION_NUMBER = 3;
     private double[][] Q = new double[StateDummy.NUMBER][ACTION_NUMBER];
 
     /* Méthodes pour le QLearning 'dummy' */
@@ -139,12 +139,10 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
         maxPower = config.getIntValue(MAX_POWER_KEY);
         Logger.info("Sample fire brigade connected: max extinguish distance = " + maxDistance + ", max power = " + maxPower + ", max tank = " + maxWater);
 
+        
         /* Code d'initialisation */
-        for (int state = 0; state < StateDummy.NUMBER; state++) {
-            for (int action = 0; action < ACTION_NUMBER; action++) {
-                Q[state][action] = 0;
-            }
-        }
+        Q = Utils.load();
+
     }
 
     @Override
@@ -195,6 +193,9 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
                 currentState.getId(),
                 action_index,
                 backup, newvalue);
+        
+        
+        Utils.save(time, Q);
     }
 
     @Override
@@ -208,12 +209,13 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
         for (StandardEntity next : e) {
             if (next instanceof Building) {
                 Building b = (Building)next;
+                //seulement si il est atteignable.
                 if (b.isOnFire() && model.getDistance(getID(), next.getID()) <= maxDistance) {
                     result.add(b);
                 }
             }
         }
-        // Sort by distance
+        // Sort by distance et surtout si il est en train d'éteindre un batiment, il le met en premier
         Collections.sort(result, new DistanceSorter(location(), model));
         return objectsToIDs(result);
     }
