@@ -5,6 +5,8 @@ import static rescuecore2.misc.Handy.objectsToIDs;
 import java.sql.Array;
 import java.util.*;
 
+import javax.measure.unit.SystemOfUnits;
+
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.messages.Command;
@@ -84,12 +86,14 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
     public int supplyWater(int time) {
         System.out.println("Going back for water");
         // Head for a refuge
+        System.out.println("water avant" + me().getWater());
         List<EntityID> path = search.breadthFirstSearch(me().getPosition(), refugeIDs);
         if (path != null) {
             Logger.info("Moving to refuge");
             sendMove(time, path);
         }
-        return 0;
+        //met -1 si il y a encore de l'eau car sinon reste non stop sur refuge
+        return waterLevel() ? -1 : 0;
     }
 
     /**
@@ -100,6 +104,7 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
         System.out.println("Extinguishing fire");
         // Find all buildings that are on fire
         Collection<EntityID> all = getBurningBuildings();
+        System.out.println(all);
         // Can we extinguish any right now?
         for (EntityID next : all) {
 //            if (model.getDistance(getID(), next) <= maxDistance && waterLevel()) {
@@ -113,7 +118,7 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
     }
 
     public int randomWalk(int time) {
-        System.out.println("Movinf randomly");
+        System.out.println("Moving randomly");
         Logger.info("Moving randomly");
         sendMove(time, randomWalk());
         return 0;
@@ -144,6 +149,7 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
 
     @Override
     protected void think(int time, ChangeSet changed, Collection<Command> heard) {
+    	System.out.println("water " + waterLevel() + " fire " + isThereFire());
         if (time == config.getIntValue(kernel.KernelConstants.IGNORE_AGENT_COMMANDS_KEY)) {
             // Subscribe to channel 1
             sendSubscribe(time, 1);
@@ -156,7 +162,7 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
         /* Choix d'une action en fonction de Q */
         StateDummy currentState = getState();
 
-        System.out.println("Current state : " + currentState.toString());
+        //System.out.println("Current state : " + currentState.toString());
 
         int action_index = chooseAction(currentState);
         /* On agit, et on récupère la récompenser associée */
@@ -202,7 +208,7 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
         for (StandardEntity next : e) {
             if (next instanceof Building) {
                 Building b = (Building)next;
-                if (b.isOnFire()) {
+                if (b.isOnFire() && model.getDistance(getID(), next.getID()) <= maxDistance) {
                     result.add(b);
                 }
             }
