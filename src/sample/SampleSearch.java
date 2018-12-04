@@ -80,7 +80,7 @@ public final class SampleSearch {
 	}
 
 	/**
-	 * Do a breadth first search from one location to the closest (in terms of number of nodes) of a set of goals.
+	 * Do a breadth first search from one location to the closest (in terms of NUMBER of nodes) of a set of goals.
 	 * 
 	 * @param start
 	 *            The location we start at.
@@ -93,7 +93,7 @@ public final class SampleSearch {
 	}
 
 	/**
-	 * Do a breadth first search from one location to the closest (in terms of number of nodes) of a set of goals.
+	 * Do a breadth first search from one location to the closest (in terms of NUMBER of nodes) of a set of goals.
 	 * 
 	 * @param start
 	 *            The location we start at.

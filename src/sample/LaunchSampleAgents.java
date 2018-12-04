@@ -88,7 +88,7 @@ public final class LaunchSampleAgents {
         try {
             while (fb-- != 0) {
                 Logger.info("Connecting fire brigade " + (i++) + "...");
-                launcher.connect(new SampleFireBrigade());
+                launcher.connect(new FireBrigadeDummy());
                 Logger.info("success");
             }
         }
