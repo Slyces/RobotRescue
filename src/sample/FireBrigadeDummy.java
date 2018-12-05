@@ -83,28 +83,26 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
      * Action : aller chercher de l'eau
      * @return récompense associée à l'action
      */
-    public int supplyWater(int time) {
+    public double supplyWater(int time) {
         System.out.println("Going back for water");
         // Head for a refuge
-        System.out.println("water avant" + me().getWater());
         List<EntityID> path = search.breadthFirstSearch(me().getPosition(), refugeIDs);
         if (path != null) {
             Logger.info("Moving to refuge");
             sendMove(time, path);
         }
         //met -1 si il y a encore de l'eau car sinon reste non stop sur refuge
-        return waterLevel() ? -1 : 0;
+        return waterLevel() ? -1 : 0.5;
     }
 
     /**
      * Action : Eteindre le feu le plus proche
      * @return recompense liée à l'action
      */
-    public int extinguishFire(int time) {
+    public double extinguishFire(int time) {
         System.out.println("Extinguishing fire");
         // Find all buildings that are on fire
         Collection<EntityID> all = getBurningBuildings();
-        System.out.println(all);
         // Can we extinguish any right now?
         for (EntityID next : all) {
 //            if (model.getDistance(getID(), next) <= maxDistance && waterLevel()) {
@@ -117,7 +115,7 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
         return -1;
     }
 
-    public int randomWalk(int time) {
+    public double randomWalk(int time) {
         System.out.println("Moving randomly");
         Logger.info("Moving randomly");
         sendMove(time, randomWalk());
@@ -164,7 +162,7 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
 
         int action_index = chooseAction(currentState);
         /* On agit, et on récupère la récompenser associée */
-        int reward = 0;
+        double reward = 0;
         switch (action_index) {
             case 0:
                 reward = randomWalk(time);
@@ -182,17 +180,22 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
         }
         /* Mise à jour de Q en fonction de la récompense */
         StateDummy newState = getState();
-        double[] currRow = Q[newState.getId()];
+        double[] currRow = Q[newState.getId()].clone();
         Arrays.sort(currRow);
-        double delta = (double) reward + gamma * currRow[currRow.length - 1]
+        double delta = reward + gamma * currRow[currRow.length - 1]
                                     - Q[currentState.getId()][action_index];
+        
         double backup = Q[currentState.getId()][action_index];
+        
         Q[currentState.getId()][action_index] += learningRate * delta;
+        
         double newvalue = Q[currentState.getId()][action_index];
+        System.out.println("eau " + me().getWater());
         System.out.printf("Update : Q[%d][%d] : %f --> %f\n",
                 currentState.getId(),
                 action_index,
                 backup, newvalue);
+        
         
         
         Utils.save(time, Q);
