@@ -50,7 +50,7 @@ public class Utils {
     		@SuppressWarnings("unused")
 			BufferedWriter br = null;
     		try {
-    			br = new BufferedWriter(new FileWriter("modules/sample/src/sample/agent_"+name+"_tick"+time+".csv"));
+    			br = new BufferedWriter(new FileWriter("src/sample/agent_" + name + "_tick" + time + ".csv"));
     		} catch (IOException e1) {
     			// TODO Auto-generated catch block
     			e1.printStackTrace();
@@ -80,6 +80,35 @@ public class Utils {
 			}
     	}
     }
+
+    private static String repeat(String str, int n) {
+        return  new String(new char[n]).replace("\0", str);
+    }
+
+    public static void printQtable(double[][] Qtable) {
+    	int rows = Qtable.length;
+    	int cols = Qtable[0].length;
+    	int size = 6 + 2;
+    	String h = "━";
+    	String v = "┃";
+    	String first = "┏" + repeat(repeat(h, size) + "┳", cols - 1) + repeat(h, size) + "┓\n";
+    	String middle = "┣" + repeat(repeat(h, size) + "╋", cols - 1) + repeat(h, size) + "┫\n";
+    	String last = "┗" + repeat(repeat(h, size) + "┻", cols - 1) + repeat(h, size) + "┛\n";
+    	StringBuilder string = new StringBuilder(first);
+        for (int i = 0; i < rows; i++) {
+            string.append(v);
+            double[] prob = softmax(Qtable[i]);
+            for (int j = 0; j < cols; j++) {
+                string.append(" " + String.format("%2.4f", prob[j]) + " ");
+                string.append(v);
+            }
+            string.append("\n");
+            if (i < rows - 1)
+                string.append(middle);
+        }
+        string.append(last);
+        System.out.print(string.toString());
+	}
     
     
     public static double[][] load() {
@@ -121,7 +150,7 @@ public class Utils {
     	    ObjectOutputStream oos = null;
 
     	    try {
-    	      final FileOutputStream fichier = new FileOutputStream("modules/sample/src/sample/Q_table.ser");
+    	      final FileOutputStream fichier = new FileOutputStream("src/sample/Q_table.ser");
     	      oos = new ObjectOutputStream(fichier);
     	      oos.writeObject(m);
     	      oos.flush();

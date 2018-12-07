@@ -202,17 +202,17 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
             Q[currentState.getId()][action_index] += learningRate * delta;
 
             double newvalue = Q[currentState.getId()][action_index];
-            System.out.println("eau " + me().getWater());
+
+            System.out.println("Niveau d'eau :" + me().getWater());
             System.out.printf("Update : Q[%d][%d] : %f --> %f\n",
                     currentState.getId(),
                     action_index,
                     backup, newvalue);
 
-
             Utils.save(time, Q);
             Utils.writeCSV(time, Q, this.name);
+            Utils.printQtable(Q);
         }
-
     }
 
     @Override
