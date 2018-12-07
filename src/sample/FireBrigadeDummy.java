@@ -5,8 +5,6 @@ import static rescuecore2.misc.Handy.objectsToIDs;
 import java.sql.Array;
 import java.util.*;
 
-import javax.measure.unit.SystemOfUnits;
-
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.messages.Command;
@@ -34,13 +32,14 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
     private double gamma = 0.9;
     public static int ACTION_NUMBER = 3;
     private double[][] Q = new double[StateDummy.NUMBER][ACTION_NUMBER];
-    
+
     private boolean learn = true;
 	private String name;
+
 	public FireBrigade me = null;
 	
 	private int myWater = 15000;
-    
+
 
     /* Méthodes pour le QLearning 'dummy' */
 
@@ -120,7 +119,7 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
      * @return recompense liée à l'action
      */
     public double extinguishFire(int time) {
-        System.out.println("Extinguishing fire");
+        System.out.println("Trying to extinguish fire");
         // Find all buildings that are on fire
         Collection<EntityID> all = getBurningBuildings();
         System.out.println(all);
@@ -160,7 +159,7 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
         maxPower = config.getIntValue(MAX_POWER_KEY);
         Logger.info("Sample fire brigade connected: max extinguish distance = " + maxDistance + ", max power = " + maxPower + ", max tank = " + maxWater);
 
-        Random rand = new Random(); 
+        Random rand = new Random();
         int nombreAleatoire = rand.nextInt(5000 - 1 + 1) + 1;
         this.name = Integer.toString(nombreAleatoire);
         this.me = me();
@@ -204,8 +203,8 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
                  * imprévu */
                 assert false;
         }
-        
-        
+
+
         if (learn) {
         	/* Mise à jour de Q en fonction de la récompense */
             StateDummy newState = getState();
@@ -213,24 +212,25 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
             Arrays.sort(currRow);
             double delta = reward + gamma * currRow[currRow.length - 1]
                                         - Q[currentState.getId()][action_index];
-            
+
             double backup = Q[currentState.getId()][action_index];
-            
+
             Q[currentState.getId()][action_index] += learningRate * delta;
-            
+
             double newvalue = Q[currentState.getId()][action_index];
+
             System.out.printf("Update : Q[%d][%d] : %f --> %f\n",
                     currentState.getId(),
                     action_index,
                     backup, newvalue);
-            
+
             
             this.me = me();
+
             Utils.save(time, Q);
             Utils.writeCSV(time, Q, this.name);
-            
+            Utils.printQtable(Q);
         }
-        
     }
 
     @Override
