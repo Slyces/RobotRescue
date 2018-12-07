@@ -34,11 +34,11 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
     private double[][] Q = new double[StateDummy.NUMBER][ACTION_NUMBER];
 
     private boolean learn = true;
-	private String name;
 
 	public FireBrigade me = null;
 	
 	private int myWater = 15000;
+	private int old_time;
 
 
     /* Méthodes pour le QLearning 'dummy' */
@@ -159,13 +159,12 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
         maxPower = config.getIntValue(MAX_POWER_KEY);
         Logger.info("Sample fire brigade connected: max extinguish distance = " + maxDistance + ", max power = " + maxPower + ", max tank = " + maxWater);
 
-        Random rand = new Random();
-        int nombreAleatoire = rand.nextInt(5000 - 1 + 1) + 1;
-        this.name = Integer.toString(nombreAleatoire);
         this.me = me();
         
         /* Code d'initialisation */
-        Q = Utils.load();
+        Matrix m = Utils.load();
+        old_time = m.time;
+        Q = m.matrice;
 
     }
 
@@ -227,8 +226,8 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
             
             this.me = me();
 
-            Utils.save(time, Q);
-            Utils.writeCSV(time, Q, this.name);
+            Utils.save(time,old_time, Q);
+            Utils.writeCSV(time,old_time, Q);
             Utils.printQtable(Q);
         }
     }

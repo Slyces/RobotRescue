@@ -10,6 +10,7 @@ import java.util.Random;
 
 public class Utils {
 
+	static private String csv_path = "modules/sample/file/"; 
     static private Random rand = new Random();
 
     public static int getRandomIndex(double[] distribution){
@@ -45,12 +46,12 @@ public class Utils {
     }
     
     
-    public static void writeCSV(int time, double[][] list,String name) {
-    	if (time %100 == 0) {
+    public static void writeCSV(int time,int old_time, double[][] list) {
+    	if (time == 1 || time == 50 || time == 100 || time == 200) {
     		@SuppressWarnings("unused")
 			BufferedWriter br = null;
     		try {
-    			br = new BufferedWriter(new FileWriter("src/sample/agent_" + name + "_tick" + time + ".csv"));
+    			br = new BufferedWriter(new FileWriter(csv_path+"agent_tick" + (time+old_time) + ".csv"));
     		} catch (IOException e1) {
     			// TODO Auto-generated catch block
     			e1.printStackTrace();
@@ -111,14 +112,14 @@ public class Utils {
 	}
     
     
-    public static double[][] load() {
+    public static Matrix load() {
     	ObjectInputStream ois = null;
 
         try {
-          final FileInputStream fichier = new FileInputStream("modules/sample/src/sample/Q_table.ser");
+          final FileInputStream fichier = new FileInputStream(csv_path+"Q_table.ser");
           ois = new ObjectInputStream(fichier);
           final Matrix m = (Matrix) ois.readObject();
-          return m.matrice;
+          return m;
         } catch (final java.io.IOException e) {
         	//file not found
         	double[][] Q = new double[StateDummy.NUMBER][FireBrigadeDummy.ACTION_NUMBER];
@@ -127,7 +128,9 @@ public class Utils {
                     Q[state][action] = 0;
                 }
             }
-        	return Q;
+        	
+        	Matrix m = new Matrix(0, Q);
+        	return m;
         } catch (final ClassNotFoundException e) {
           e.printStackTrace();
         } finally {
@@ -143,14 +146,14 @@ public class Utils {
     }
     
     
-    public static void save(int time, double[][] Q) {
+    public static void save(int time, int old_time, double[][] Q) {
     	if (time %50 == 0) {
     		System.out.println("save File");
-    		Matrix m = new Matrix(Q);
+    		Matrix m = new Matrix(time + old_time, Q);
     	    ObjectOutputStream oos = null;
 
     	    try {
-    	      final FileOutputStream fichier = new FileOutputStream("src/sample/Q_table.ser");
+    	      final FileOutputStream fichier = new FileOutputStream(csv_path+"Q_table.ser");
     	      oos = new ObjectOutputStream(fichier);
     	      oos.writeObject(m);
     	      oos.flush();
