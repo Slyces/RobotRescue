@@ -5,8 +5,6 @@ import static rescuecore2.misc.Handy.objectsToIDs;
 import java.sql.Array;
 import java.util.*;
 
-import javax.measure.unit.SystemOfUnits;
-
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.messages.Command;
@@ -100,7 +98,7 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
      * @return recompense liée à l'action
      */
     public double extinguishFire(int time) {
-        System.out.println("Extinguishing fire");
+        System.out.println("Trying to extinguish fire");
         // Find all buildings that are on fire
         Collection<EntityID> all = getBurningBuildings();
         // Can we extinguish any right now?
@@ -145,7 +143,8 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
 
     @Override
     protected void think(int time, ChangeSet changed, Collection<Command> heard) {
-    	System.out.println("water " + waterLevel() + " fire " + isThereFire());
+        System.out.println("===============================================");
+    	System.out.println("State :" + getState().toString());
         if (time == config.getIntValue(kernel.KernelConstants.IGNORE_AGENT_COMMANDS_KEY)) {
             // Subscribe to channel 1
             sendSubscribe(time, 1);
@@ -163,6 +162,7 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
         int action_index = chooseAction(currentState);
         /* On agit, et on récupère la récompenser associée */
         double reward = 0;
+        System.out.print("Action : ");
         switch (action_index) {
             case 0:
                 reward = randomWalk(time);
@@ -195,8 +195,6 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
                 currentState.getId(),
                 action_index,
                 backup, newvalue);
-        
-        
         
         Utils.save(time, Q);
     }
