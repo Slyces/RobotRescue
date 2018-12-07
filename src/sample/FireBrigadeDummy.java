@@ -33,7 +33,7 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
     public static int ACTION_NUMBER = 3;
     private double[][] Q = new double[StateDummy.NUMBER][ACTION_NUMBER];
 
-    private boolean learn = true;
+    private boolean learn = false;
 
 	public FireBrigade me = null;
 	
@@ -108,10 +108,9 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
         //met -1 si il y a encore de l'eau car sinon reste non stop sur refuge
         int temp = waterLevel();
         System.out.println("temp" + temp);
-        if (temp == 0) 
-        	return 0.5;
-        else 
-        	return -1;
+        if (temp != 0 && getState().isWater() == 0)
+        	System.out.println("!!!!! ====================================== !!!!!!");
+        return temp == 0 ? 0.5 : -0.2;
     }
 
     /**
@@ -141,7 +140,7 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
         System.out.println("Moving randomly");
         Logger.info("Moving randomly");
         sendMove(time, randomWalk());
-        return 0;
+        return waterLevel() == 0 ? -0.2 : 0;
     }
 
     /* ---------------------------------------------------------------- */
@@ -202,6 +201,8 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
                  * imprévu */
                 assert false;
         }
+        
+        Utils.score(time);
 
 
         if (learn) {
@@ -225,6 +226,7 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
 
             
             this.me = me();
+
 
             Utils.save(time,old_time, Q);
             Utils.writeCSV(time,old_time, Q);
