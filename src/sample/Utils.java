@@ -8,6 +8,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Random;
 
+import kernel.ui.ScoreTable;
+
 public class Utils {
 
 	static private String csv_path = "modules/sample/file/"; 
@@ -46,8 +48,17 @@ public class Utils {
     }
     
     
+    public static void score(int time) {
+    	if (time == 10) {
+    		double a = ScoreTable.ScoreModel.ScoreFunctionEntry.getScore(time);
+    		System.out.println("===============================================================" + a );
+    	}
+    }
+    
+    
     public static void writeCSV(int time,int old_time, double[][] list) {
-    	if (time == 1 || time == 50 || time == 100 || time == 200) {
+    	int new_time = time + old_time;
+    	if (new_time == 1 || new_time == 100 || new_time == 300 || new_time == 500) {
     		@SuppressWarnings("unused")
 			BufferedWriter br = null;
     		try {
