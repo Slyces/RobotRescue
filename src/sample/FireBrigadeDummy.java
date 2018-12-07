@@ -33,6 +33,10 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
     private double gamma = 0.9;
     public static int ACTION_NUMBER = 3;
     private double[][] Q = new double[StateDummy.NUMBER][ACTION_NUMBER];
+    
+    private boolean learn = true;
+	private String name;
+    
 
     /* Méthodes pour le QLearning 'dummy' */
 
@@ -62,6 +66,7 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
      * @return boolean : True = il reste de l'eau, False = y'en a plus
      */
     private boolean waterLevel() {
+    	System.out.println("water"+me().getWater());
         return me().isWaterDefined() && me().getWater() > 0;
     }
 
@@ -103,12 +108,15 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
         System.out.println("Extinguishing fire");
         // Find all buildings that are on fire
         Collection<EntityID> all = getBurningBuildings();
+        System.out.println(all);
         // Can we extinguish any right now?
         for (EntityID next : all) {
 //            if (model.getDistance(getID(), next) <= maxDistance && waterLevel()) {
             if (waterLevel()) {
                 Logger.info("Extinguishing " + next);
-                sendExtinguish(time, next, maxPower);
+                sendExtinguish(time, next, maxPower - 1000);
+                sendSpeak(time, 1, ("Extinguishing " + next).getBytes());
+                me().setWater(me().getWater() - 1000);
                 return 1;
             }
         }
@@ -137,7 +145,9 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
         maxPower = config.getIntValue(MAX_POWER_KEY);
         Logger.info("Sample fire brigade connected: max extinguish distance = " + maxDistance + ", max power = " + maxPower + ", max tank = " + maxWater);
 
-        
+        Random rand = new Random(); 
+        int nombreAleatoire = rand.nextInt(5000 - 1 + 1) + 1;
+        this.name = Integer.toString(nombreAleatoire);
         /* Code d'initialisation */
         Q = Utils.load();
 
@@ -178,27 +188,32 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
                  * imprévu */
                 assert false;
         }
-        /* Mise à jour de Q en fonction de la récompense */
-        StateDummy newState = getState();
-        double[] currRow = Q[newState.getId()].clone();
-        Arrays.sort(currRow);
-        double delta = reward + gamma * currRow[currRow.length - 1]
-                                    - Q[currentState.getId()][action_index];
-        
-        double backup = Q[currentState.getId()][action_index];
-        
-        Q[currentState.getId()][action_index] += learningRate * delta;
-        
-        double newvalue = Q[currentState.getId()][action_index];
-        System.out.println("eau " + me().getWater());
-        System.out.printf("Update : Q[%d][%d] : %f --> %f\n",
-                currentState.getId(),
-                action_index,
-                backup, newvalue);
         
         
+        if (learn) {
+        	/* Mise à jour de Q en fonction de la récompense */
+            StateDummy newState = getState();
+            double[] currRow = Q[newState.getId()].clone();
+            Arrays.sort(currRow);
+            double delta = reward + gamma * currRow[currRow.length - 1]
+                                        - Q[currentState.getId()][action_index];
+            
+            double backup = Q[currentState.getId()][action_index];
+            
+            Q[currentState.getId()][action_index] += learningRate * delta;
+            
+            double newvalue = Q[currentState.getId()][action_index];
+            System.out.println("eau " + me().getWater());
+            System.out.printf("Update : Q[%d][%d] : %f --> %f\n",
+                    currentState.getId(),
+                    action_index,
+                    backup, newvalue);
+            
+            
+            Utils.save(time, Q);
+            Utils.writeCSV(time, Q, this.name);
+        }
         
-        Utils.save(time, Q);
     }
 
     @Override

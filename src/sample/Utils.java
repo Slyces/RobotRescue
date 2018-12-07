@@ -1,6 +1,8 @@
 package sample;
+import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -40,6 +42,43 @@ public class Utils {
 
     public static double[] softmax(double[] array) {
         return softmax(array, 8);
+    }
+    
+    
+    public static void writeCSV(int time, double[][] list,String name) {
+    	if (time == 50) {
+    		@SuppressWarnings("unused")
+			BufferedWriter br = null;
+    		try {
+    			br = new BufferedWriter(new FileWriter("modules/sample/src/sample/agent_"+name+"_tick"+time+".csv"));
+    		} catch (IOException e1) {
+    			// TODO Auto-generated catch block
+    			e1.printStackTrace();
+    		}
+        	StringBuilder sb = new StringBuilder();
+
+        	// Append strings from array
+        	for (double[] a : list) {
+        		for (double b :a) {
+        			sb.append(b);
+        	    	sb.append(",");
+        		}
+        	 sb.append("\n");
+        	}
+        	
+        	try {
+				br.write(sb.toString());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        	try {
+				br.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	}
     }
     
     
