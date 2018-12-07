@@ -16,6 +16,7 @@ import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.StandardEntityURN;
 import rescuecore2.standard.entities.Building;
 import rescuecore2.standard.entities.FireBrigade;
+import rescuecore2.standard.entities.Refuge;
 
 /**
    A sample fire brigade agent.
@@ -36,6 +37,9 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
     
     private boolean learn = true;
 	private String name;
+	public FireBrigade me = null;
+	
+	private int myWater = 15000;
     
 
     /* Méthodes pour le QLearning 'dummy' */
@@ -65,9 +69,12 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
      * Etat de la réserve de solution aqueuse
      * @return boolean : True = il reste de l'eau, False = y'en a plus
      */
-    private boolean waterLevel() {
-    	System.out.println("water"+me().getWater());
-        return me().isWaterDefined() && me().getWater() > 0;
+    @SuppressWarnings("null")
+	private int waterLevel() {
+    	if (myWater == 0)
+        	return 0;
+        else 
+        	return 1;
     }
 
     /**
@@ -79,7 +86,7 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
     }
 
     public StateDummy getState() {
-        return new StateDummy(waterLevel(), isThereFire());
+        return new StateDummy(myWater, isThereFire());
     }
 
     /* Actions */
@@ -91,13 +98,21 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
     public double supplyWater(int time) {
         System.out.println("Going back for water");
         // Head for a refuge
-        List<EntityID> path = search.breadthFirstSearch(me().getPosition(), refugeIDs);
+        List<EntityID> path = search.breadthFirstSearch(me.getPosition(), refugeIDs);
         if (path != null) {
             Logger.info("Moving to refuge");
             sendMove(time, path);
         }
+        if (location() instanceof Refuge) {
+        	myWater = me().getWater();
+        }
         //met -1 si il y a encore de l'eau car sinon reste non stop sur refuge
-        return waterLevel() ? -1 : 0.5;
+        int temp = waterLevel();
+        System.out.println("temp" + temp);
+        if (temp == 0) 
+        	return 0.5;
+        else 
+        	return -1;
     }
 
     /**
@@ -112,11 +127,11 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
         // Can we extinguish any right now?
         for (EntityID next : all) {
 //            if (model.getDistance(getID(), next) <= maxDistance && waterLevel()) {
-            if (waterLevel()) {
+            if (myWater > 0) {
                 Logger.info("Extinguishing " + next);
-                sendExtinguish(time, next, maxPower - 1000);
+                sendExtinguish(time, next, maxPower);
                 sendSpeak(time, 1, ("Extinguishing " + next).getBytes());
-                me().setWater(me().getWater() - 1000);
+                myWater = Math.max(myWater - 3000, 0);
                 return 1;
             }
         }
@@ -148,6 +163,8 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
         Random rand = new Random(); 
         int nombreAleatoire = rand.nextInt(5000 - 1 + 1) + 1;
         this.name = Integer.toString(nombreAleatoire);
+        this.me = me();
+        
         /* Code d'initialisation */
         Q = Utils.load();
 
@@ -155,7 +172,6 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
 
     @Override
     protected void think(int time, ChangeSet changed, Collection<Command> heard) {
-    	System.out.println("water " + waterLevel() + " fire " + isThereFire());
         if (time == config.getIntValue(kernel.KernelConstants.IGNORE_AGENT_COMMANDS_KEY)) {
             // Subscribe to channel 1
             sendSubscribe(time, 1);
@@ -163,10 +179,10 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
         for (Command next : heard) {
             Logger.debug("Heard " + next);
         }
-        FireBrigade me = me();
 
         /* Choix d'une action en fonction de Q */
         StateDummy currentState = getState();
+        System.out.println("water " + waterLevel() + " fire " + currentState.isFire());
 
         //System.out.println("Current state : " + currentState.toString());
 
@@ -203,15 +219,16 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
             Q[currentState.getId()][action_index] += learningRate * delta;
             
             double newvalue = Q[currentState.getId()][action_index];
-            System.out.println("eau " + me().getWater());
             System.out.printf("Update : Q[%d][%d] : %f --> %f\n",
                     currentState.getId(),
                     action_index,
                     backup, newvalue);
             
             
+            this.me = me();
             Utils.save(time, Q);
             Utils.writeCSV(time, Q, this.name);
+            
         }
         
     }
@@ -244,6 +261,6 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
         if (targets.isEmpty()) {
             return null;
         }
-        return search.breadthFirstSearch(me().getPosition(), objectsToIDs(targets));
+        return search.breadthFirstSearch(me.getPosition(), objectsToIDs(targets));
     }
 }

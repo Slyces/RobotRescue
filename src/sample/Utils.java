@@ -46,7 +46,7 @@ public class Utils {
     
     
     public static void writeCSV(int time, double[][] list,String name) {
-    	if (time == 50) {
+    	if (time %100 == 0) {
     		@SuppressWarnings("unused")
 			BufferedWriter br = null;
     		try {
