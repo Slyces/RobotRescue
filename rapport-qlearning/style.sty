@@ -1,0 +1,222 @@
+\ProvidesPackage{style}[2018/07/14 My Style file .sty]
+
+% ------------------------------------------------------------
+% Police
+% \setmonofont{Consolas}
+\setmonofont{FreeMono}
+% \setmonofont{DejaVu Sans Mono}
+
+% ------------------------------------------------------------
+% Dépendences
+\usepackage{graphicx} % pour les images
+\usepackage{trimclip} % dépendance pour cadres partiels
+\usepackage{minted} % mise en forme de code
+\usepackage{titlesec} % formatage des titres
+\usepackage{hyperref} % formats de liens
+\usepackage{xcolor} % gestion des couleurs
+\usepackage[most]{tcolorbox} % boites et autres cadres
+\usepackage{mathtools} % alignement des équations (entre autres)
+\usepackage{amssymb} % symboles (\geqslant, entre autres)
+\usepackage{appendix} % pour ajouter un appendice en fin
+\usepackage{tikz} % graphes
+\usepackage{xifthen} % fournit le test \isempty
+\usepackage{pgfplots} % plots de fonctions
+\usepackage{multirow} % cellules sur plusieurs lignes / colonnes
+\pgfplotsset{compat=1.15}
+
+% ------------------------------------------------------------
+% Couleurs
+\definecolor{airforceblue}{rgb}{0.36, 0.54, 0.66}
+\definecolor{red}{rgb}{0.8, 0.0, 0.0}
+\definecolor{blue}{rgb}{0.36, 0.54, 0.66}
+\definecolor{green}{rgb}{0.0, 0.42, 0.24}
+\definecolor{grey}{RGB}{200, 200, 200}
+\definecolor{darkgrey}{RGB}{75, 75, 75}
+
+% ------------------------------------------------------------
+% Changer l'apparence des liens
+\hypersetup{
+    colorlinks=true,
+    linkcolor=airforceblue
+}
+
+% ------------------------------------------------------------
+% Environnements
+\newcounter{hypothesis}
+\newenvironment{hypothese}[1]{
+    \refstepcounter{hypothesis}
+    \noindent\Hyp{\thehypothesis} -- \textsc{#1}\vspace{4pt}\newline
+    \indent
+}{
+    \vspace{10pt}
+}
+
+\newenvironment{pseudocode}[1]{
+    \begin{code}
+        \begin{center} \textsc{#1} \end{center}
+        \vspace{-15pt}
+        \textcolor{grey}{\rule{\textwidth}{1pt}}
+        \vspace{-18pt}
+}{
+    \end{code}
+}
+
+% ------------------------------------------------------------
+% Abréviations
+\newcommand\UG{\textbf{\textsc{ug}}}
+
+
+% ------------------------------------------------------------
+% Commandes
+\let\oldforall\forall
+\renewcommand{\forall}{\oldforall~}
+
+\newcommand{\smalltitle}[1]{\noindent\textbf{{\large #1}}\vspace{8pt}}
+\newcommand{\smallsection}[1]{\noindent\textbf{\textcolor{darkgrey}{#1}}\newline} % \vspace{8pt}
+
+\newcommand{\citeArticle}[1]{\textit{<< #1 >>}}
+\newcommand{\Hyp}[1]{\ensuremath{\mathcal{H}#1}}
+% Sorry j'essaie de régler ça !
+
+% Citation d'une page, ligne
+% \newcommand{\p}[1]{\texttt{(p~#1.)}}
+% \newcommand{\pl}[2]{\texttt{(p~#1.~l~#2.)}}
+% \newcommand{\pll}[3]{\texttt{(p~#1.~l~#2~--~#3.)}}
+
+% Titre et page de garde
+\newcommand{\tcol}[1]{\textcolor{red}{#1}}
+
+% Questions 
+\newcounter{question}[subsection]
+\newcommand{\question}[1]{\medskip\noindent\refstepcounter{question} \partbox{tl}{\textbf{\arabic{section}.\thequestion}}~\textit{#1}\smallskip}
+
+\newcounter{subquestion}[question]
+\newcommand{\subquestion}[1]{\smallskip\refstepcounter{subquestion}\textbf{\alph{subquestion})~}\textit{#1}\smallskip}
+
+% Separateur gris
+\newcommand{\greysep}{\textcolor{grey}{\rule{\textwidth}{1pt}}}
+
+% ------------------------------------------------------------
+% Code [minted]
+% \usemintedstyle{bw}
+% Code listings
+% \usepackage{listings}
+\usepackage{listingsutf8}
+\lstdefinelanguage{pseudocode}{
+  keywords={pour, si, fin, sinon, <--},
+  keywordstyle=\color{black}\bfseries,
+  keywords=[2]{Entrée},
+  keywordstyle=[2]\color{darkgrey}\bfseries,
+  identifierstyle=\color{black},
+  sensitive=false,
+  comment=[l]{\#},
+%   morecomment=[s]{/*}{*/},
+  commentstyle=\color{purple}\ttfamily%,
+%   stringstyle=\color{red}\ttfamily,
+%   morestring=[b]',
+%   morestring=[b]"
+}
+
+\lstset{
+   language=pseudocode,
+   extendedchars=true,
+%   inputencoding=utf8x,
+   basicstyle=\footnotesize\ttfamily,
+   showstringspaces=false,
+   showspaces=false,
+   tabsize=2,
+   breaklines=true,
+   showtabs=false,
+   mathescape=true
+}
+
+% ------------------------------------------------------------
+
+\newenvironment{code}{\vspace{8pt}\begin{codebox}}{\end{codebox}\vspace{8pt}}
+\newenvironment{doublecode}[1]{
+    \vspace{8pt}
+    \begin{center}
+        \textbf{\texttt{#1}}
+    \end{center}
+    \vspace{-6pt}
+    \begin{doublecodebox}
+}{
+    \end{doublecodebox}
+    \vspace{8pt}
+}
+
+% ------------------------------------------------------------
+% Cadres [tcolorbox]
+\newtcolorbox{codebox}{
+    colback=grey!2!white,
+    colframe=black!25!white,
+    boxrule=1px,
+    fuzzy halo=2pt with grey!25!white,
+    bottom=5pt, top=5pt,
+    grow to left by = -0.5cm,
+    grow to right by =-0.5cm,
+    breakable
+}
+
+\newtcolorbox{doublecodebox}[1][]{
+    sidebyside,
+    title=#1,
+    colback=grey!2!white,
+    colframe=black!25!white,
+    boxrule=1px,
+    fuzzy halo=2pt with grey!25!white,
+    bottom=5pt, top=5pt,
+    grow to left by = -0.5cm,
+    grow to right by =-0.5cm
+}
+
+% ------------------------------------------------------------
+% Mise en forme des titres
+
+% Souligner les titres de sections
+\titleformat{\section}[block]%
+    {\Large\bfseries}{}{0pt}%
+    {\thesection}[\vspace{2pt}\titlerule]
+
+\titleformat*{\subsection}{\Large\bfseries}
+\titleformat*{\subsubsection}{\normalfont\bfseries\itshape}
+% -------------------------------------------------------------
+% Numérotation des titres
+
+\renewcommand{\thesection}%
+    {\Roman{section}%
+        \ifnum\value{section}=0%
+        \else~--~%
+        \fi%
+    }
+\renewcommand{\thesubsection}{}%{\arabic{subsection}.}
+\renewcommand{\thesubsubsection}{}%{\Roman{section}--\arabic{subsection}.\arabic{subsubsection}.}
+
+% ------------------------------------------------------------
+% Cadres partiels
+\fboxsep=2pt\relax\fboxrule=1pt\relax
+\newif\iflclip
+\newif\ifbclip
+\newif\ifrclip
+\newif\iftclip
+\def\CLIP{\dimexpr\fboxrule+.2pt\relax}
+\def\nulclip{0pt}
+\newcommand\partbox[2]{%
+  \lclipfalse\bclipfalse\rclipfalse\tclipfalse%
+  \let\lkern\relax\let\rkern\relax%
+  \let\lclip\nulclip\let\bclip\nulclip\let\rclip\nulclip\let\tclip\nulclip%
+  \parseclip#1\relax\relax%
+  \iflclip\def\lkern{\kern\CLIP}\def\lclip{\CLIP}\fi
+  \ifbclip\def\bclip{\CLIP}\fi
+  \ifrclip\def\rkern{\kern\CLIP}\def\rclip{\CLIP}\fi
+  \iftclip\def\tclip{\CLIP}\fi
+  \lkern\clipbox{\lclip{} \bclip{} \rclip{} \tclip}{\fbox{#2}}\rkern%
+}
+\def\parseclip#1#2\relax{%
+  \ifx l#1\lcliptrue\else
+  \ifx b#1\bcliptrue\else
+  \ifx r#1\rcliptrue\else
+  \ifx t#1\tcliptrue\else
+  \fi\fi\fi\fi
+  \ifx\relax#2\relax\else\parseclip#2\relax\fi
+}
