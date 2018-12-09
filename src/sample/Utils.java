@@ -50,8 +50,8 @@ public class Utils {
     
     public static void score(int time) {
     	if (time == 10) {
-    		double a = ScoreTable.ScoreModel.ScoreFunctionEntry.getScore(time);
-    		System.out.println("===============================================================" + a );
+//    		double a = ScoreTable.ScoreModel.ScoreFunctionEntry.getScore(time);
+//    		System.out.println("===============================================================" + a );
     	}
     }
     
