@@ -14,9 +14,11 @@ import rescuecore2.standard.entities.StandardEntityURN;
 import rescuecore2.standard.entities.Building;
 import rescuecore2.standard.entities.FireBrigade;
 import rescuecore2.standard.entities.Refuge;
-import sample.*;
-import sample.State.QState;
-import sample.State.StateDummy;
+import sample.AbstractSampleAgent;
+import sample.DistanceSorter;
+import sample.Matrix;
+import sample.State.*;
+import sample.Utils;
 
 /**
    A sample fire brigade agent.

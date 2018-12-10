@@ -4,14 +4,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import firesimulator.world.FireBrigade;
 import rescuecore2.log.Logger;
-import rescuecore2.standard.entities.Building;
-import rescuecore2.standard.entities.Human;
-import rescuecore2.standard.entities.StandardEntity;
-import rescuecore2.standard.entities.StandardEntityURN;
+import rescuecore2.standard.entities.*;
+import rescuecore2.worldmodel.EntityID;
+import sample.State.*;
 import sample.*;
-import sample.State.QState;
+
+import static rescuecore2.misc.Handy.objectsToIDs;
 
 /**
    A sample fire brigade agent.

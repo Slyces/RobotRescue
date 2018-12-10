@@ -16,6 +16,7 @@ import sample.Matrix;
 import sample.FireBrigade.FireBrigadeCoop;
 import sample.FireBrigade.FireBrigadeDummy;
 import sample.State.StateDummy;
+import sample.State.StateCoop;
 import sample.Direction;
 
 public class Utils {
