@@ -1,0 +1,60 @@
+%! TEX program = lualatex
+\documentclass{article}
+% -------------------------------------------------------------
+%\usepackage[utf8]{inputenc}
+\usepackage{fontspec}
+%\usepackage[T1]{fontenc}
+\usepackage[francais]{babel}
+\usepackage{style}
+
+% ------------------------------------------------------------
+% Gestion des marges
+\usepackage[top=2.5cm, bottom=2.5cm, left=2cm, right=2cm]{geometry}
+
+% -------------------------------------------------------------
+% Page de garde
+\title{%
+    \vspace*{\fill}
+    \textbf{\scshape \tcol{Co}ordination et \tcol{Co}nsensus \tcol{M}ulti\tcol{A}gents}\\
+    Projet de Q-learning
+}
+\author{
+    Maxime Desbois et Simon Lassourreuille
+}
+\date{
+    Décembre 2018
+    \vspace*{\fill}
+}
+
+\begin{document}
+
+\maketitle
+
+\clearpage
+
+\section{Agent q-learning simple}
+
+Dans un premier temps, nous avons souhaité mettre à l'épreuve la méthode de Q-Learning sur un exemple le plus simple possible. Nous avons donc créé un agent qui possède un nombre très limité d'états, associés à des actions très haut niveau en quantité également très réduite.\\
+L'objectif de cet agent est d'obtenir un comportement très proche (dans l'idéal, identique) de celui de l'agent fourni avec le code. Un tel agent aurait le comportement suivant : il se déplace aléatoirement sur la carte, jusqu'à observer un feu. Il se rapproche alors du feu le plus proche de lui, et essaie de l'éteindre. En cas de réservoir d'eau vide, il retourne au refuge pour le remplir.
+
+\subsection{Etats}
+
+Pour les Etats, nous avons choisi de garder les états strictement essentiels :
+
+\begin{tabular}{|c|c|c|}
+    \hline
+    Etat & Espace de définition & Signification \\
+    \hline
+    F      & $\{0, 1\}$ & Existe-t-il un feu dans mon champ de vision ?\\
+    \hline
+    W      & $\{0, 1\}$ & Mon réservoir d'eau est-il rempli (non-vide) ?\\
+    \hline
+\end{tabular}
+
+\subsection{Actions}
+
+\section{Résultats}
+
+\subsection{Tables de Q-Valeurs}
+
+\end{document}

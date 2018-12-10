@@ -12,10 +12,7 @@ public class StateDummy {
     public static int NUMBER = 4;
 
     public StateDummy(int water, boolean fire) {
-        if (water == 0)
-        	this.water = 0;
-        else 
-        	this.water = 1;
+        this.water = water;
         this.fire = fire;
     }
 
@@ -36,8 +33,9 @@ public class StateDummy {
 	}
 
 	public int getId() {
+        int waterInt = water;
         int fireInt = fire ? 1 : 0;
-        return water * 2 + fireInt;
+        return waterInt * 2 + fireInt;
     }
 
     @Override

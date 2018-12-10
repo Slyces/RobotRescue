@@ -72,7 +72,7 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
 	private int waterLevel() {
     	if (myWater == 0)
         	return 0;
-        else 
+        else
         	return 1;
     }
 
@@ -85,7 +85,7 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
     }
 
     public StateDummy getState() {
-        return new StateDummy(myWater, isThereFire());
+        return new StateDummy(waterLevel(), isThereFire());
     }
 
     /* Actions */

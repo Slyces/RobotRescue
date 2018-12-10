@@ -50,7 +50,7 @@ public class Utils {
     
     public static void score(int time) {
     	if (time == 10) {
-    		System.out.println("===============================================================" );
+	    // nothing happens
     	}
     }
     
