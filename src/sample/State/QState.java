@@ -1,4 +1,4 @@
-package sample.src.sample.State;
+package sample.State;
 
 public interface QState {
     int NUMBER = 0;

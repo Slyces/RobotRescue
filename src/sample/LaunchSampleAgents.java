@@ -16,7 +16,7 @@ import rescuecore2.log.Logger;
 import rescuecore2.standard.entities.StandardEntityFactory;
 import rescuecore2.standard.entities.StandardPropertyFactory;
 import rescuecore2.standard.messages.StandardMessageFactory;
-import sample.src.sample.FireBrigade.FireBrigadeCoop;
+import sample.FireBrigade.FireBrigadeCoop;
 
 /**
    Launcher for sample agents. This will launch as many instances of each of the sample agents as possible, all using one connction.

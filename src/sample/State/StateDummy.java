@@ -1,4 +1,4 @@
-package sample.src.sample.State;
+package sample.State;
 
 public class StateDummy implements QState {
     private int water;

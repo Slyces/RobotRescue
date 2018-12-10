@@ -1,4 +1,4 @@
-package sample.src.sample;
+package sample;
 
 public enum Direction {
     NORTH,
