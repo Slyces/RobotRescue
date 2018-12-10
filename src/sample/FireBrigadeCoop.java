@@ -1,25 +1,20 @@
-package sample;
+package sample.src.sample;
 
-import static rescuecore2.misc.Handy.objectsToIDs;
+import rescuecore2.log.Logger;
+import rescuecore2.messages.Command;
+import rescuecore2.standard.entities.*;
+import rescuecore2.worldmodel.ChangeSet;
+import rescuecore2.worldmodel.EntityID;
+import sample.*;
 
-import java.sql.Array;
 import java.util.*;
 
-import rescuecore2.worldmodel.EntityID;
-import rescuecore2.worldmodel.ChangeSet;
-import rescuecore2.messages.Command;
-import rescuecore2.log.Logger;
-
-import rescuecore2.standard.entities.StandardEntity;
-import rescuecore2.standard.entities.StandardEntityURN;
-import rescuecore2.standard.entities.Building;
-import rescuecore2.standard.entities.FireBrigade;
-import rescuecore2.standard.entities.Refuge;
+import static rescuecore2.misc.Handy.objectsToIDs;
 
 /**
    A sample fire brigade agent.
  */
-public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
+public class FireBrigadeCoop extends FireBrigadeDummy {
     private static final String MAX_WATER_KEY = "fire.tank.maximum";
     private static final String MAX_DISTANCE_KEY = "fire.extinguish.max-distance";
     private static final String MAX_POWER_KEY = "fire.extinguish.max-sum";
@@ -42,12 +37,6 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
 
 
     /* Méthodes pour le QLearning 'dummy' */
-
-    public int chooseAction(StateDummy state) {
-        double[] row = Q[state.getId()];
-        double[] softmax_distribution = Utils.softmax(row);
-        return Utils.getRandomIndex(softmax_distribution);
-    }
 
     /*
      * Espace des états

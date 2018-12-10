@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from functools import reduce
-import csv
+import csv, numpy as np
 
 actions = ("Random Walk", "Extinguish Fire", "Resupply Water")
 states = [("W", 2), ("F", 2)]
@@ -13,6 +13,8 @@ if __name__ == '__main__':
     args = parser.parse_args()
     csv_path = args.csv_file
     out_path = csv_path.replace(".csv", ".tex")
+    out_path = '/'.join(out_path.split('/')[:-1] + ['softmax_' + out_path.split('/')[-1]])
+
 
     n_states = reduce(lambda x,y: x*y, map(lambda x: x[1], states))
     n_actions = len(actions)
@@ -23,7 +25,13 @@ if __name__ == '__main__':
         for i, row in enumerate(reader):
             if i < n_states:
                 for j, val in enumerate(row[:-1]):
-                    table[i][j] = val
+                    table[i][j] = float(val)
+
+    def softmax(x, beta = 8):
+        sum_x = sum([np.exp(y * beta) for y in x])
+        return [np.exp(y * beta) / sum_x for y in x]
+
+    table = [softmax(row) for row in table]
 
     lines = [["" for i in range(len(states) + len(actions))] for j in range(n_states)]
     sep = [r"\hline" for i in range(n_states)]
@@ -42,7 +50,7 @@ if __name__ == '__main__':
                     lines[i][j] = text
 
         for j, val in enumerate(table[i]):
-            lines[i][len(states) + j] = "{:.3f}".format(float(val))
+            lines[i][len(states) + j] = "{:.2f}".format(float(val))
 
     header = [' '] * len(states) + list(actions)
 
@@ -61,6 +69,5 @@ if __name__ == '__main__':
     tex += indent + r"\hline" + "\n"
     tex += r"\end{tabular}" + "\n"
     tex += r"\end{center}" + "\n"
-    # tex += r"\end{code}"
 
     open(out_path, 'w').write(tex)

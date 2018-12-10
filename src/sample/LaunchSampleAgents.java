@@ -16,6 +16,7 @@ import rescuecore2.log.Logger;
 import rescuecore2.standard.entities.StandardEntityFactory;
 import rescuecore2.standard.entities.StandardPropertyFactory;
 import rescuecore2.standard.messages.StandardMessageFactory;
+import sample.src.sample.FireBrigadeCoop;
 
 /**
    Launcher for sample agents. This will launch as many instances of each of the sample agents as possible, all using one connction.
@@ -87,7 +88,7 @@ public final class LaunchSampleAgents {
         try {
             while (fb-- != 0) {
                 Logger.info("Connecting fire brigade " + (i++) + "...");
-                launcher.connect(new FireBrigadeDummy());
+                launcher.connect(new FireBrigadeCoop());
                 Logger.info("success");
             }
         }
