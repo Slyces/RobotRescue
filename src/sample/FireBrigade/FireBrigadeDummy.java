@@ -73,11 +73,8 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
      * @return boolean : True = il reste de l'eau, False = y'en a plus
      */
     @SuppressWarnings("null")
-	private int waterLevel() {
-    	if (myWater == 0)
-        	return 0;
-        else
-        	return 1;
+	protected boolean waterLevel() {
+        return !(myWater == 0);
     }
 
     /**
@@ -110,8 +107,7 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
         	myWater = me().getWater();
         }
         //met -1 si il y a encore de l'eau car sinon reste non stop sur refuge
-        int temp = waterLevel();
-        return temp == 0 ? 0.5 : -0.2;
+        return waterLevel() ? 0.5 : -0.2;
     }
 
     /**
@@ -141,7 +137,7 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
         System.out.println("Moving randomly");
         Logger.info("Moving randomly");
         sendMove(time, randomWalk());
-        return waterLevel() == 0 ? -0.2 : 0.1;
+        return waterLevel() ? 0.1 : -0.2;
     }
 
     /* ---------------------------------------------------------------- */

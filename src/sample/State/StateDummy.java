@@ -1,21 +1,21 @@
 package sample.State;
 
 public class StateDummy implements QState {
-    private int water;
+    private boolean water;
     private boolean fire;
     private static int maxWater = 15000;
     public static int NUMBER = 4;
 
-    public StateDummy(int water, boolean fire) {
+    public StateDummy(boolean water, boolean fire) {
         this.water = water;
         this.fire = fire;
     }
 
-    public int isWater() {
+    public boolean isWater() {
 		return water;
 	}
 
-	public void setWater(int water) {
+	public void setWater(boolean water) {
 		this.water = water;
 	}
 
@@ -28,7 +28,7 @@ public class StateDummy implements QState {
 	}
 
 	public int getId() {
-        int waterInt = water;
+        int waterInt = water ? 1 : 0;
         int fireInt = fire ? 1 : 0;
         return waterInt * 2 + fireInt;
     }

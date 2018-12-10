@@ -35,16 +35,36 @@ public class FireBrigadeCoop extends FireBrigadeDummy {
      *  - Move Est
      *  - Move Sud
      *  - Move Ouest
-     *  - Respenish Water
      *  - Extinguish Fire
+     *  - Respenish Water
      *
      * Taille de Q : 2**6 x 6
      * */
 
     /* Etats */
 
+    @Override
+    protected double act(int action_index, int time) {
+        switch (action_index) {
+            case 0:
+                return moveTowards(Direction.NORTH, time);
+            case 1:
+                return moveTowards(Direction.EAST, time);
+            case 2:
+                return moveTowards(Direction.SOUTH, time);
+            case 3:
+                return moveTowards(Direction.WEST, time);
+            case 4:
+                return extinguishFire(time);
+            case 5:
+                return supplyWater(time);
+            default:
+                assert false;
+                return 0;
+        }
+    }
 
-	@Override
+    @Override
     protected void postConnect() {
         super.postConnect();
         model.indexClass(StandardEntityURN.BUILDING, StandardEntityURN.REFUGE,StandardEntityURN.HYDRANT,StandardEntityURN.GAS_STATION);
@@ -60,13 +80,6 @@ public class FireBrigadeCoop extends FireBrigadeDummy {
         old_time = m.time;
         Q = m.matrice;
 
-    }
-
-	private boolean waterLevel() {
-    	if (myWater == 0)
-        	return false;
-        else
-        	return true;
     }
 
 	public QState getState() {
@@ -89,7 +102,7 @@ public class FireBrigadeCoop extends FireBrigadeDummy {
             }
         }
         // Try to get to anything within maxDistance of the target
-        EntityID target = best.getID();
+        EntityID target = best != null ? best.getID() : null;
         Collection<StandardEntity> targets = model.getObjectsInRange(target, maxDistance);
         List<EntityID> path = null;
         if (! targets.isEmpty()) {
