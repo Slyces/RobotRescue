@@ -19,32 +19,59 @@ public class FireBrigadeCoop extends FireBrigadeDummy {
 
 	public static int ACTION_NUMBER = 6;
 
-	/* Méthodes pour le QLearning 'coop' */
+    /* Méthodes pour le QLearning 'coop' */
 
-	/*
-	 * Espace des états : - Présence d'un feu [bool] - Niveau d'eau [bool] -
-	 * Team-Mate Nord [bool] - Team-Mate Est [bool] - Team-Mate Sud [bool] -
-	 * Team-Mate Ouest [bool]
-	 *
-	 * Espace des actions - Move Nord - Move Est - Move Sud - Move Ouest - Respenish
-	 * Water - Extinguish Fire
-	 *
-	 * Taille de Q : 2**6 x 6
-	 */
+    /*
+     * Espace des états :
+     *  - Présence d'un feu [bool]
+     *  - Niveau d'eau [bool]
+     *  - Team-Mate Nord [bool]
+     *  - Team-Mate Est [bool]
+     *  - Team-Mate Sud [bool]
+     *  - Team-Mate Ouest [bool]
+     *
+     * Espace des actions
+     *  - Move Nord
+     *  - Move Est
+     *  - Move Sud
+     *  - Move Ouest
+     *  - Extinguish Fire
+     *  - Respenish Water
+     *
+     * Taille de Q : 2**6 x 6
+     * */
 
-	/* Etats */
+    /* Etats */
 
-	@Override
-	protected void postConnect() {
-		super.postConnect();
-		model.indexClass(StandardEntityURN.BUILDING, StandardEntityURN.REFUGE, StandardEntityURN.HYDRANT,
-				StandardEntityURN.GAS_STATION);
-		maxWater = config.getIntValue(MAX_WATER_KEY);
-		maxDistance = config.getIntValue(MAX_DISTANCE_KEY);
-		maxPower = config.getIntValue(MAX_POWER_KEY);
-		Logger.info("Sample fire brigade connected: max extinguish distance = " + maxDistance + ", max power = "
-				+ maxPower + ", max tank = " + maxWater);
+    @Override
+    protected double act(int action_index, int time) {
+        switch (action_index) {
+            case 0:
+                return moveTowards(Direction.NORTH, time);
+            case 1:
+                return moveTowards(Direction.EAST, time);
+            case 2:
+                return moveTowards(Direction.SOUTH, time);
+            case 3:
+                return moveTowards(Direction.WEST, time);
+            case 4:
+                return extinguishFire(time);
+            case 5:
+                return supplyWater(time);
+            default:
+                assert false;
+                return 0;
+        }
+    }
 
+    @Override
+    protected void postConnect() {
+        super.postConnect();
+        model.indexClass(StandardEntityURN.BUILDING, StandardEntityURN.REFUGE,StandardEntityURN.HYDRANT,StandardEntityURN.GAS_STATION);
+        maxWater = config.getIntValue(MAX_WATER_KEY);
+        maxDistance = config.getIntValue(MAX_DISTANCE_KEY);
+        maxPower = config.getIntValue(MAX_POWER_KEY);
+        Logger.info("Sample fire brigade connected: max extinguish distance = " + maxDistance + ", max power = " + maxPower + ", max tank = " + maxWater);
 		this.me = me();
 
 		/* Code d'initialisation */
@@ -53,6 +80,7 @@ public class FireBrigadeCoop extends FireBrigadeDummy {
 		Q = m.matrice;
 
 	}
+
 
 	private boolean waterLevel() {
 		if (myWater == 0)
@@ -122,5 +150,4 @@ public class FireBrigadeCoop extends FireBrigadeDummy {
 
 		return retour;
 	}
-
 }
