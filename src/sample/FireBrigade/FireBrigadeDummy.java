@@ -1,4 +1,4 @@
-package sample.src.sample.FireBrigade;
+package sample.FireBrigade;
 
 import static rescuecore2.misc.Handy.objectsToIDs;
 
@@ -15,16 +15,16 @@ import rescuecore2.standard.entities.Building;
 import rescuecore2.standard.entities.FireBrigade;
 import rescuecore2.standard.entities.Refuge;
 import sample.*;
-import sample.src.sample.State.QState;
-import sample.src.sample.State.StateDummy;
+import sample.State.QState;
+import sample.State.StateDummy;
 
 /**
    A sample fire brigade agent.
  */
 public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
-    private static final String MAX_WATER_KEY = "fire.tank.maximum";
-    private static final String MAX_DISTANCE_KEY = "fire.extinguish.max-distance";
-    private static final String MAX_POWER_KEY = "fire.extinguish.max-sum";
+    protected static final String MAX_WATER_KEY = "fire.tank.maximum";
+    protected static final String MAX_DISTANCE_KEY = "fire.extinguish.max-distance";
+    protected static final String MAX_POWER_KEY = "fire.extinguish.max-sum";
 
     int maxWater;
     int maxDistance;
@@ -33,14 +33,14 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
     double learningRate = 0.4;
     protected double gamma = 0.9;
     public static int ACTION_NUMBER = 3;
-    protected double[][] Q = new double[sample.src.sample.State.StateDummy.NUMBER][ACTION_NUMBER];
+    protected double[][] Q = new double[sample.State.StateDummy.NUMBER][ACTION_NUMBER];
 
     private boolean learn = true;
 
 	public FireBrigade me = null;
 	
-	private int myWater = 15000;
-	private int old_time;
+	protected int myWater = 15000;
+	protected int old_time;
 
 
     /* Méthodes pour le QLearning 'dummy' */
@@ -82,7 +82,7 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
      * Envoie vrai si il y a un feu dans le champ de vision
      * @return boolean : True = l'ensemble des feux proche est non-vide
      */
-    private boolean isThereFire() {
+    protected boolean isThereFire() {
         return getBurningBuildings().size() > 0;
     }
 
@@ -160,7 +160,7 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
         this.me = me();
         
         /* Code d'initialisation */
-        Matrix m = Utils.load();
+        Matrix m = Utils.loadDummy();
         old_time = m.time;
         Q = m.matrice;
     }

@@ -1,4 +1,4 @@
-package sample.src.sample;
+package sample;
 import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -13,9 +13,10 @@ import rescuecore2.standard.entities.Building;
 import rescuecore2.standard.entities.FireBrigade;
 import rescuecore2.standard.entities.StandardEntity;
 import sample.Matrix;
-import sample.src.sample.Direction;
-import sample.src.sample.FireBrigade.FireBrigadeDummy;
-import sample.src.sample.State.StateDummy;
+import sample.FireBrigade.FireBrigadeCoop;
+import sample.FireBrigade.FireBrigadeDummy;
+import sample.State.StateDummy;
+import sample.Direction;
 
 public class Utils {
 
@@ -155,7 +156,7 @@ public class Utils {
 	}
     
     
-    public static Matrix load() {
+    public static Matrix loadDummy() {
     	ObjectInputStream ois = null;
 
         try {
@@ -165,9 +166,42 @@ public class Utils {
           return m;
         } catch (final java.io.IOException e) {
         	//file not found
-        	double[][] Q = new double[sample.src.sample.State.StateDummy.NUMBER][sample.src.sample.FireBrigade.FireBrigadeDummy.ACTION_NUMBER];
+        	double[][] Q = new double[sample.State.StateDummy.NUMBER][sample.FireBrigade.FireBrigadeDummy.ACTION_NUMBER];
         	for (int state = 0; state < StateDummy.NUMBER; state++) {
                 for (int action = 0; action < FireBrigadeDummy.ACTION_NUMBER; action++) {
+                    Q[state][action] = 0;
+                }
+            }
+        	
+        	Matrix m = new Matrix(0, Q);
+        	return m;
+        } catch (final ClassNotFoundException e) {
+          e.printStackTrace();
+        } finally {
+          try {
+            if (ois != null) {
+              ois.close();
+            }
+          } catch (final IOException ex) {
+            ex.printStackTrace();
+          }
+        }
+		return null;
+    }
+    
+    public static Matrix loadCoop() {
+    	ObjectInputStream ois = null;
+
+        try {
+          final FileInputStream fichier = new FileInputStream(csv_path + "Q_table_coop.ser");
+          ois = new ObjectInputStream(fichier);
+          final Matrix m = (Matrix) ois.readObject();
+          return m;
+        } catch (final java.io.IOException e) {
+        	//file not found
+        	double[][] Q = new double[StateCoop.NUMBER][sample.FireBrigade.FireBrigadeCoop.ACTION_NUMBER];
+        	for (int state = 0; state < StateCoop.NUMBER; state++) {
+                for (int action = 0; action < FireBrigadeCoop.ACTION_NUMBER; action++) {
                     Q[state][action] = 0;
                 }
             }
