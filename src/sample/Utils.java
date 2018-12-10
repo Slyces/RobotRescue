@@ -96,7 +96,7 @@ public class Utils {
     		@SuppressWarnings("unused")
 			BufferedWriter br = null;
     		try {
-    			br = new BufferedWriter(new FileWriter(csv_path+"agent_tick" + (time+old_time) + ".csv"));
+    			br = new BufferedWriter(new FileWriter(csv_path + "agent_tick" + (time + old_time) + ".csv"));
     		} catch (IOException e1) {
     			// TODO Auto-generated catch block
     			e1.printStackTrace();
