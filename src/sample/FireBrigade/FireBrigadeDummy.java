@@ -26,11 +26,11 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
     private static final String MAX_DISTANCE_KEY = "fire.extinguish.max-distance";
     private static final String MAX_POWER_KEY = "fire.extinguish.max-sum";
 
-    protected int maxWater;
-    protected int maxDistance;
-    protected int maxPower;
+    int maxWater;
+    int maxDistance;
+    int maxPower;
 
-    protected double learningRate = 0.4;
+    double learningRate = 0.4;
     protected double gamma = 0.9;
     public static int ACTION_NUMBER = 3;
     protected double[][] Q = new double[sample.src.sample.State.StateDummy.NUMBER][ACTION_NUMBER];
@@ -163,7 +163,6 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
         Matrix m = Utils.load();
         old_time = m.time;
         Q = m.matrice;
-
     }
 
     protected double act(int action_index, int time) {
