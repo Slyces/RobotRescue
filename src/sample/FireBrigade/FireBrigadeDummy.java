@@ -53,6 +53,10 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
         return Utils.getRandomIndex(softmax_distribution);
     }
 
+    public String getAgentName() {
+        return "dummy";
+    }
+
     /*
      * Espace des états
      * {fire, water} (deux booléens)
@@ -74,7 +78,7 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
      */
     @SuppressWarnings("null")
 	protected boolean waterLevel() {
-        return !(myWater == 0);
+        return myWater != 0;
     }
 
     /**
@@ -107,7 +111,7 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
         	myWater = me().getWater();
         }
         //met -1 si il y a encore de l'eau car sinon reste non stop sur refuge
-        return waterLevel() ? 0.5 : -0.2;
+        return waterLevel() ? -0.2 : 0.5;
     }
 
     /**
@@ -220,8 +224,8 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
         if (learn) {
             this.me = me();
             improveTable(currentState, reward, action_index, time);
-            Utils.save(time,old_time, Q);
-            Utils.writeCSV(time,old_time, Q);
+            Utils.save(time, old_time, getAgentName(), Q);
+            Utils.writeCSV(time, old_time, getAgentName(), Q);
             Utils.printQtable(Q);
         }
     }

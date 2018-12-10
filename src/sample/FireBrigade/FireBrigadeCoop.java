@@ -44,15 +44,25 @@ public class FireBrigadeCoop extends FireBrigadeDummy {
     /* Etats */
 
     @Override
+    public String getAgentName() {
+        return "coop";
+    }
+
+    @Override
     protected double act(int action_index, int time) {
+    	System.out.print("Action index " + action_index + " :");
         switch (action_index) {
             case 0:
+                System.out.println("Moving towards North");
                 return moveTowards(Direction.NORTH, time);
             case 1:
+				System.out.println("Moving towards East");
                 return moveTowards(Direction.EAST, time);
             case 2:
+				System.out.println("Moving towards South");
                 return moveTowards(Direction.SOUTH, time);
             case 3:
+				System.out.println("Moving towards West");
                 return moveTowards(Direction.WEST, time);
             case 4:
                 return extinguishFire(time);
@@ -82,13 +92,6 @@ public class FireBrigadeCoop extends FireBrigadeDummy {
 	}
 
 
-	private boolean waterLevel() {
-		if (myWater == 0)
-			return false;
-		else
-			return true;
-	}
-
 	public QState getState() {
 		return new StateCoop(waterLevel(), isThereFire(), isThereFireBrigades());
 	}
@@ -98,29 +101,36 @@ public class FireBrigadeCoop extends FireBrigadeDummy {
 		Collection<StandardEntity> entities = model.getEntitiesOfType(StandardEntityURN.BUILDING);
 		Building best = null;
 		FireBrigade me = me();
-		double best_dist = 10e10;
+		double best_dist = -1;
 		for (StandardEntity e : entities) {
 			Building building = (Building) e;
 			if (Utils.direction(me, building) == direction) {
-				if (best == null || Utils.distance(me, building, direction) < best_dist) {
+				if (best == null || Utils.distance(me, building, direction) > best_dist) {
 					best = building;
 					best_dist = Utils.distance(me, building, direction);
 				}
 			}
 		}
 		// Try to get to anything within maxDistance of the target
-		EntityID target = best.getID();
-		Collection<StandardEntity> targets = model.getObjectsInRange(target, maxDistance);
-		List<EntityID> path = null;
-		if (!targets.isEmpty()) {
-			path = search.breadthFirstSearch(me().getPosition(), objectsToIDs(targets));
+		EntityID target = best != null ? best.getID() : null;
+		System.out.println("Best is " + (best != null ? best.toString() : "null"));
+        if (target != null) {
+            List<EntityID> bestIDs = new ArrayList<>();
+            bestIDs.add(target);
+            List<EntityID> path = search.breadthFirstSearch(me.getPosition(), bestIDs);
+            if (path != null) {
+                sendMove(time, path);
+                System.out.println(path.toString());
+                return 0;
+            }
 		}
-		sendMove(time, path);
+		randomWalk(time);
+        System.out.println("Randomwalked !!!");
 		return 0;
 	}
 
 	public boolean[] isThereFireBrigades() {
-		List<Human> voisins = new ArrayList<Human>();
+		List<Human> voisins = new ArrayList<>();
 		boolean[] retour = new boolean[4];
 		Collection<StandardEntity> e = model.getEntitiesOfType(StandardEntityURN.FIRE_BRIGADE);
 		for (StandardEntity next : e) {
