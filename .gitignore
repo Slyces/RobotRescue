@@ -1,3 +1,7 @@
 manifest
 file/*
 *.iml
+/bin/
+.classpath
+.project
+src/.project

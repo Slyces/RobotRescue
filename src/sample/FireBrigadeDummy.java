@@ -107,9 +107,6 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
         }
         //met -1 si il y a encore de l'eau car sinon reste non stop sur refuge
         int temp = waterLevel();
-        System.out.println("temp" + temp);
-        if (temp != 0 && getState().isWater() == 0)
-        	System.out.println("!!!!! ====================================== !!!!!!");
         return temp == 0 ? 0.5 : -0.2;
     }
 
@@ -201,7 +198,6 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
                  * imprévu */
                 assert false;
         }
-        
         Utils.score(time);
 
 
