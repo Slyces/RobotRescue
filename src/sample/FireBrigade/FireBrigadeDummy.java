@@ -1,8 +1,7 @@
-package sample;
+package sample.src.sample.FireBrigade;
 
 import static rescuecore2.misc.Handy.objectsToIDs;
 
-import java.sql.Array;
 import java.util.*;
 
 import rescuecore2.worldmodel.EntityID;
@@ -15,6 +14,9 @@ import rescuecore2.standard.entities.StandardEntityURN;
 import rescuecore2.standard.entities.Building;
 import rescuecore2.standard.entities.FireBrigade;
 import rescuecore2.standard.entities.Refuge;
+import sample.*;
+import sample.src.sample.State.QState;
+import sample.src.sample.State.StateDummy;
 
 /**
    A sample fire brigade agent.
@@ -24,14 +26,14 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
     private static final String MAX_DISTANCE_KEY = "fire.extinguish.max-distance";
     private static final String MAX_POWER_KEY = "fire.extinguish.max-sum";
 
-    private int maxWater;
-    private int maxDistance;
-    private int maxPower;
+    protected int maxWater;
+    protected int maxDistance;
+    protected int maxPower;
 
-    private double learningRate = 0.4;
-    private double gamma = 0.9;
+    protected double learningRate = 0.4;
+    protected double gamma = 0.9;
     public static int ACTION_NUMBER = 3;
-    private double[][] Q = new double[StateDummy.NUMBER][ACTION_NUMBER];
+    protected double[][] Q = new double[sample.src.sample.State.StateDummy.NUMBER][ACTION_NUMBER];
 
     private boolean learn = true;
 
@@ -43,7 +45,7 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
 
     /* Méthodes pour le QLearning 'dummy' */
 
-    public int chooseAction(StateDummy state) {
+    public int chooseAction(QState state) {
         double[] row = Q[state.getId()];
         double[] softmax_distribution = Utils.softmax(row);
         return Utils.getRandomIndex(softmax_distribution);
@@ -84,7 +86,7 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
         return getBurningBuildings().size() > 0;
     }
 
-    public StateDummy getState() {
+    public QState getState() {
         return new StateDummy(waterLevel(), isThereFire());
     }
 
@@ -137,7 +139,7 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
         System.out.println("Moving randomly");
         Logger.info("Moving randomly");
         sendMove(time, randomWalk());
-        return waterLevel() == 0 ? -0.2 : 0;
+        return waterLevel() == 0 ? -0.2 : 0.1;
     }
 
     /* ---------------------------------------------------------------- */
@@ -164,6 +166,43 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
 
     }
 
+    protected double act(int action_index, int time) {
+        /* On agit, et on récupère la récompenser associée */
+        switch (action_index) {
+            case 0:
+                return randomWalk(time);
+            case 1:
+                return extinguishFire(time);
+            case 2:
+                return supplyWater(time);
+            default:
+                /* Si on plante ici, c'est qu'on a retourné un indice d'action
+                 * imprévu */
+                assert false;
+                return 0;
+        }
+    }
+
+    protected void improveTable(QState currentState, double reward, int action_index, int time) {
+        /* Mise à jour de Q en fonction de la récompense */
+        QState newState = getState();
+        double[] currRow = Q[newState.getId()].clone();
+        Arrays.sort(currRow);
+        double delta = reward + gamma * currRow[currRow.length - 1]
+                - Q[currentState.getId()][action_index];
+
+        double backup = Q[currentState.getId()][action_index];
+
+        Q[currentState.getId()][action_index] += learningRate * delta;
+
+        double newvalue = Q[currentState.getId()][action_index];
+
+        System.out.printf("Update : Q[%d][%d] : %f --> %f\n",
+                currentState.getId(),
+                action_index,
+                backup, newvalue);
+    }
+
     @Override
     protected void think(int time, ChangeSet changed, Collection<Command> heard) {
         if (time == config.getIntValue(kernel.KernelConstants.IGNORE_AGENT_COMMANDS_KEY)) {
@@ -175,55 +214,15 @@ public class FireBrigadeDummy extends AbstractSampleAgent<FireBrigade> {
         }
 
         /* Choix d'une action en fonction de Q */
-        StateDummy currentState = getState();
-        System.out.println("water " + waterLevel() + " fire " + currentState.isFire());
-
-        //System.out.println("Current state : " + currentState.toString());
-
+        QState currentState = getState();
         int action_index = chooseAction(currentState);
-        /* On agit, et on récupère la récompenser associée */
-        double reward = 0;
-        switch (action_index) {
-            case 0:
-                reward = randomWalk(time);
-                break;
-            case 1:
-                reward = extinguishFire(time);
-                break;
-            case 2:
-                reward = supplyWater(time);
-                break;
-            default:
-                /* Si on plante ici, c'est qu'on a retourné un indice d'action
-                 * imprévu */
-                assert false;
-        }
-        Utils.score(time);
 
+        /* Réalisation de l'action */
+        double reward = act(action_index, time);
 
         if (learn) {
-        	/* Mise à jour de Q en fonction de la récompense */
-            StateDummy newState = getState();
-            double[] currRow = Q[newState.getId()].clone();
-            Arrays.sort(currRow);
-            double delta = reward + gamma * currRow[currRow.length - 1]
-                                        - Q[currentState.getId()][action_index];
-
-            double backup = Q[currentState.getId()][action_index];
-
-            Q[currentState.getId()][action_index] += learningRate * delta;
-
-            double newvalue = Q[currentState.getId()][action_index];
-
-            System.out.printf("Update : Q[%d][%d] : %f --> %f\n",
-                    currentState.getId(),
-                    action_index,
-                    backup, newvalue);
-
-            
             this.me = me();
-
-
+            improveTable(currentState, reward, action_index, time);
             Utils.save(time,old_time, Q);
             Utils.writeCSV(time,old_time, Q);
             Utils.printQtable(Q);

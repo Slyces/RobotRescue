@@ -1,4 +1,4 @@
-package sample;
+package sample.src.sample;
 import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -8,12 +8,53 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Random;
 
-import kernel.ui.ScoreTable;
+import rescuecore.objects.MovingObject;
+import rescuecore2.standard.entities.Building;
+import rescuecore2.standard.entities.FireBrigade;
+import rescuecore2.standard.entities.StandardEntity;
+import sample.Matrix;
+import sample.src.sample.Direction;
+import sample.src.sample.FireBrigade.FireBrigadeDummy;
+import sample.src.sample.State.StateDummy;
 
 public class Utils {
 
 	static private String csv_path = "modules/sample/file/"; 
     static private Random rand = new Random();
+
+    public static double distance(FireBrigade agent, Building building, Direction direction) {
+        if (direction == Direction.NORTH || direction == Direction.SOUTH)
+            return Math.abs(agent.getY() - building.getY());
+        else
+            return Math.abs(agent.getX() - building.getX());
+    }
+
+    public static Direction direction(FireBrigade agent1, FireBrigade agent2) {
+        int angle = getAngle(agent1.getX(), agent1.getY(), agent2.getX(), agent2.getY());
+        return direction(angle);
+    }
+
+    public static Direction direction(FireBrigade agent, Building building) {
+        int angle = getAngle(agent.getX(), agent.getY(), building.getX(), building.getY());
+        return direction(angle);
+    }
+
+    public static Direction direction(int angle) {
+        if (45 <= angle && angle < 135) {
+            return Direction.NORTH;
+        } else if (angle < 225) {
+            return Direction.WEST;
+        } else if (angle < 315) {
+            return Direction.SOUTH;
+        } else {
+            return Direction.EAST;
+        }
+    }
+
+    public static int getAngle(int rx, int ry, int tx, int ty) {
+        int degrees = (int) Math.toDegrees(Math.atan2(rx - tx, ry - ty));
+        return degrees - 360 * Math.floorDiv(degrees, 360);
+    }
 
     public static int getRandomIndex(double[] distribution){
         double p = rand.nextDouble();
@@ -46,15 +87,7 @@ public class Utils {
     public static double[] softmax(double[] array) {
         return softmax(array, 8);
     }
-    
-    
-    public static void score(int time) {
-    	if (time == 10) {
-	    // nothing happens
-    	}
-    }
-    
-    
+
     public static void writeCSV(int time,int old_time, double[][] list) {
     	int new_time = time + old_time;
     	if (new_time == 1 || new_time == 100 || new_time == 300 || new_time == 500) {
@@ -132,7 +165,7 @@ public class Utils {
           return m;
         } catch (final java.io.IOException e) {
         	//file not found
-        	double[][] Q = new double[StateDummy.NUMBER][FireBrigadeDummy.ACTION_NUMBER];
+        	double[][] Q = new double[sample.src.sample.State.StateDummy.NUMBER][sample.src.sample.FireBrigade.FireBrigadeDummy.ACTION_NUMBER];
         	for (int state = 0; state < StateDummy.NUMBER; state++) {
                 for (int action = 0; action < FireBrigadeDummy.ACTION_NUMBER; action++) {
                     Q[state][action] = 0;

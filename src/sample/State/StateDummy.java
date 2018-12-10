@@ -1,11 +1,6 @@
-package sample;
+package sample.src.sample.State;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-
-public class StateDummy {
+public class StateDummy implements QState {
     private int water;
     private boolean fire;
     private static int maxWater = 15000;
